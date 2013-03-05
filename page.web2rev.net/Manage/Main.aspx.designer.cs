@@ -85,6 +85,15 @@ namespace page.web2rev.net.Manage {
         protected global::System.Web.UI.WebControls.TextBox TextBoxSiteCreatedSiteName;
         
         /// <summary>
+        /// TextBoxSelectedServerPathFolder control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox TextBoxSelectedServerPathFolder;
+        
+        /// <summary>
         /// FormViewAccount control.
         /// </summary>
         /// <remarks>

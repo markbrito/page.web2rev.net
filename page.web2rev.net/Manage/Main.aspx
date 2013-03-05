@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true"
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" MaintainScrollPositionOnPostback="True"
     CodeBehind="Main.aspx.cs" Inherits="page.web2rev.net.Manage.Main" %>
 
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
@@ -27,6 +27,7 @@
                     Text='<%# Guid.Empty.ToString() %>'></asp:TextBox>
                 <asp:TextBox ID="TextBoxSiteCreatedAccountName" Style="display: none;" runat="server"></asp:TextBox>
                 <asp:TextBox ID="TextBoxSiteCreatedSiteName" Style="display: none;" runat="server"></asp:TextBox>
+                <asp:TextBox ID="TextBoxSelectedServerPathFolder" Style="display: none;" runat="server"></asp:TextBox>
                 <asp:FormView ID="FormViewAccount" runat="server" DataSourceID="SqlDataSourceFormViewAccount">
                     <ItemTemplate>
                         <asp:Panel ID="PanelHeader" runat="server" Width="100%" Visible='<%# !(Eval("AccountCount").ToString().Equals("0")) %>'
@@ -78,13 +79,13 @@
                                                 <span class="subHeader">SITES</span>
                                                 <asp:GridView ID="gvSites" runat="server" AllowPaging="True" AllowSorting="True"
                                                     AutoGenerateColumns="False" DataKeyNames="ID,VersionNumber" DataSourceID="SqlDataSourceAccountSites"
-                                                    SelectedRowStyle-BackColor="#3399FF">
+                                                    SelectedRowStyle-BackColor="#CCCCCC" PageSize="15" EnablePersistedSelection="True" EnableSortingAndPagingCallbacks="True">
                                                     <Columns>
                                                         <asp:TemplateField ShowHeader="False">
                                                             <ItemTemplate>
                                                                 <asp:UpdatePanel ID="UpdatePanelSiteSelect" runat="server">
                                                                     <ContentTemplate>
-                                                                        <asp:LinkButton ID="lnkSelectSite" runat="server" CausesValidation="False" CommandName="SelectSite"
+                                                                        <asp:LinkButton ID="lnkSelectSite" runat="server" CausesValidation="False" CommandName="Select"
                                                                             Text="Select" CommandArgument='<%# Bind("ID") %>' OnCommand="lnkSelectSite_Command"></asp:LinkButton>
                                                                     </ContentTemplate>
                                                                     <Triggers>
@@ -122,17 +123,33 @@
                                             </td>
                                             <td valign="top">
                                                 <span class="subHeader">SITE FOLDERS</span><br />
-                                                <asp:TreeView ID="TreeViewSiteFolders" runat="server" OnTreeNodePopulate="TreeViewSiteFolders_TreeNodePopulate">
-                                                </asp:TreeView>
+                                                <asp:UpdatePanel ID="UpdatePanelFolderSelection" runat="server">
+                                                    <ContentTemplate>
+                                                        <asp:TreeView ID="TreeViewSiteFolders" runat="server" OnTreeNodePopulate="TreeViewSiteFolders_TreeNodePopulate"
+                                                            SelectedNodeStyle-BorderStyle="Dotted" SelectedNodeStyle-BorderWidth="1px" SelectedNodeStyle-BackColor="#CCCCCC"
+                                                            ShowLines="True" OnSelectedNodeChanged="TreeViewSiteFolders_SelectedNodeChanged">
+                                                        </asp:TreeView>
+                                                    </ContentTemplate>
+                                                    <Triggers>
+                                                        <asp:PostBackTrigger ControlID="TreeViewSiteFolders" />
+                                                    </Triggers>
+                                                </asp:UpdatePanel>
+                                            </td>
+                                            <td valign="top">
+                                                <span class="subHeader">FOLDER UPLOAD</span><br />
+                                                <asp:UpdatePanel ID="UpdatePanelFolderUpload" runat="server">
+                                                <ContentTemplate>
+                                                    <asp:AjaxFileUpload ID="AjaxFileUploadFolders" runat="server" 
+                                                        onuploadcomplete="AjaxFileUploadFolders_UploadComplete" 
+                                                         AllowedFileTypes="jpg,png,gif,jpeg,txt,xml,html,htm,js,json,css,xsd,xsl" />
+                                                </ContentTemplate>
+                                                </asp:UpdatePanel>
                                             </td>
                                         </tr>
                                     </table>
-                                    1. Create Account, Site and Folder Directories
-                                    2. Upload Files
-                                    3. Create Files
-                                    4. Crediting
-                                    5. Editing
-                                    6. Admin / Reporting
+                                    
+                                    2. Files Grid,&nbsp; Subtract upload/f Credits 3. Create Files 4. Crediting 5. 
+                                    Editing 6. Admin / Reporting
                                 </ContentTemplate>
                                 <Triggers>
                                     <asp:PostBackTrigger ControlID="btnCreateSite" />
