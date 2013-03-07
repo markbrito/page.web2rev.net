@@ -74,6 +74,22 @@
     <Content Include="App_Data\aspnetdb_log.ldf">
       <DependentUpon>ASPNETDB.MDF</DependentUpon>
     </Content>
+    <Content Include="Content\Image\FileType\Audio.bmp" />
+    <Content Include="Content\Image\FileType\Audio.png" />
+    <Content Include="Content\Image\FileType\Document.gif" />
+    <Content Include="Content\Image\FileType\IFrame.bmp" />
+    <Content Include="Content\Image\FileType\Image.bmp" />
+    <Content Include="Content\Image\FileType\Image.png" />
+    <Content Include="Content\Image\FileType\Other.png" />
+    <Content Include="Content\Image\FileType\Page.png" />
+    <Content Include="Content\Image\FileType\Response.gif" />
+    <Content Include="Content\Image\FileType\Script.png" />
+    <Content Include="Content\Image\FileType\ScriptSrc.bmp" />
+    <Content Include="Content\Image\FileType\Style.bmp" />
+    <Content Include="Content\Image\FileType\Style.png" />
+    <Content Include="Content\Image\FileType\StyleLink.png" />
+    <Content Include="Content\Image\FileType\Text.png" />
+    <Content Include="Content\Image\FileType\Video.png" />
     <Content Include="Manage\Main.aspx" />
     <Content Include="SQL\ASPNETDB.sql" />
     <Content Include="SQL\ClearData.sql" />
@@ -83,7 +99,9 @@
     <Content Include="Scripts\jquery-1.4.1-vsdoc.js" />
     <Content Include="Scripts\jquery-1.4.1.js" />
     <Content Include="Scripts\jquery-1.4.1.min.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>

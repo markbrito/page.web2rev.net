@@ -171,12 +171,17 @@ namespace page.web2rev.net.Manage
             } while (nodeStack.Count > 0);
             TextBoxSelectedServerPathFolder.Text = path;
             Session["SELECTEDSERVERPATHFOLDER"] = path;
+            TextBoxSelectedFolderID.Text = tv.SelectedNode.Value;
+            Session["SELECTEDFOLDERID"] = tv.SelectedNode.Value;
+            PanelFolderFiles.Visible = true;
+            gvFileType.DataBind();
         }
 
         protected void AjaxFileUploadFolders_UploadComplete(object sender, AjaxControlToolkit.AjaxFileUploadEventArgs e)
         {
             FileTableAdapter adptrFile = new FileTableAdapter();
             FileTypeTableAdapter adptrType = new FileTypeTableAdapter();
+            FileCouplingTableAdapter adptrFileCoupling = new FileCouplingTableAdapter();
             AjaxControlToolkit.AjaxFileUpload upload = (AjaxControlToolkit.AjaxFileUpload)sender;
             string fileURI = Session["SELECTEDSERVERPATHFOLDER"] + e.FileName;
             string fileExt = fileURI.Substring(fileURI.LastIndexOf("."));
@@ -204,6 +209,18 @@ namespace page.web2rev.net.Manage
                 fileTypeName.Equals("Text") || fileTypeName.Equals("Script");
             adptrFile.Insert(fileID, true, 1, DateTime.Now, fileTypeID, e.FileName,
                 fileURI, filePath, (long)e.FileSize, (e.FileSize < 128 * 1024) && isTextFile ? e.GetContents().ToString() : string.Empty);
+            adptrFileCoupling.Insert(Guid.NewGuid(), new Guid(Session["SELECTEDFOLDERID"].ToString()), fileID);
+            PanelFolderFiles.Visible = true;
+            TextBoxSelectedServerPathFolder.Text = Session["SELECTEDSERVERPATHFOLDER"].ToString();
+            TextBoxSelectedFolderID.Text = Session["SELECTEDFOLDERID"].ToString();
+            PanelFolderFiles.Visible = true;
+            gvFileType.DataBind();
+        }
+
+        protected void btnRefreshFiles_Click(object sender, EventArgs e)
+        {
+            PanelFolderFiles.Visible = true;
+            gvFileType.DataBind();
         }
 
     }

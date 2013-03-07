@@ -31,6 +31,15 @@ namespace page.web2rev.net.Manage {
         protected global::System.Web.UI.UpdatePanel UpdatePanelMain;
         
         /// <summary>
+        /// btnRefreshFiles control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnRefreshFiles;
+        
+        /// <summary>
         /// TextBoxUserName control.
         /// </summary>
         /// <remarks>
@@ -94,6 +103,15 @@ namespace page.web2rev.net.Manage {
         protected global::System.Web.UI.WebControls.TextBox TextBoxSelectedServerPathFolder;
         
         /// <summary>
+        /// TextBoxSelectedFolderID control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox TextBoxSelectedFolderID;
+        
+        /// <summary>
         /// FormViewAccount control.
         /// </summary>
         /// <remarks>
@@ -101,6 +119,51 @@ namespace page.web2rev.net.Manage {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.FormView FormViewAccount;
+        
+        /// <summary>
+        /// UpdatePanelFolderUpload control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.UpdatePanel UpdatePanelFolderUpload;
+        
+        /// <summary>
+        /// AjaxFileUploadFolders control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::AjaxControlToolkit.AjaxFileUpload AjaxFileUploadFolders;
+        
+        /// <summary>
+        /// PanelFolderFiles control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel PanelFolderFiles;
+        
+        /// <summary>
+        /// gvFileType control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView gvFileType;
+        
+        /// <summary>
+        /// SqlDataSourceFileType control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.SqlDataSource SqlDataSourceFileType;
         
         /// <summary>
         /// FormViewCreateAccount control.

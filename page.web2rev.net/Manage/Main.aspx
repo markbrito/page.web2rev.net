@@ -1,5 +1,5 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" MaintainScrollPositionOnPostback="True"
-    CodeBehind="Main.aspx.cs" Inherits="page.web2rev.net.Manage.Main" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true"
+    MaintainScrollPositionOnPostback="True" CodeBehind="Main.aspx.cs" Inherits="page.web2rev.net.Manage.Main" %>
 
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 <asp:Content ID="ContentHead" ContentPlaceHolderID="HeadContent" runat="server">
@@ -20,6 +20,7 @@
         </asp:ToolkitScriptManager>
         <asp:UpdatePanel ID="UpdatePanelMain" runat="server">
             <ContentTemplate>
+                <asp:Button ID="btnRefreshFiles" Style="display: none;" runat="server" Text="" OnClick="btnRefreshFiles_Click" />
                 <asp:TextBox ID="TextBoxUserName" Style="display: none;" runat="server" Text='<%# Membership.GetUser(this.Context.User.Identity.Name).UserName  %>'></asp:TextBox>
                 <asp:TextBox ID="TextBoxNewAccountID" Style="display: none;" runat="server" Text='<%# Guid.NewGuid().ToString() %>'></asp:TextBox>
                 <asp:TextBox ID="TextBoxNewSiteID" Style="display: none;" runat="server" Text='<%# Guid.NewGuid().ToString() %>'></asp:TextBox>
@@ -28,6 +29,7 @@
                 <asp:TextBox ID="TextBoxSiteCreatedAccountName" Style="display: none;" runat="server"></asp:TextBox>
                 <asp:TextBox ID="TextBoxSiteCreatedSiteName" Style="display: none;" runat="server"></asp:TextBox>
                 <asp:TextBox ID="TextBoxSelectedServerPathFolder" Style="display: none;" runat="server"></asp:TextBox>
+                <asp:TextBox ID="TextBoxSelectedFolderID" Style="display: none;" runat="server"></asp:TextBox>
                 <asp:FormView ID="FormViewAccount" runat="server" DataSourceID="SqlDataSourceFormViewAccount">
                     <ItemTemplate>
                         <asp:Panel ID="PanelHeader" runat="server" Width="100%" Visible='<%# !(Eval("AccountCount").ToString().Equals("0")) %>'
@@ -73,20 +75,23 @@
                                     </asp:ObjectDataSource>
                                     <asp:HiddenField ID="HiddenFieldNewSiteName" runat="server" />
                                     <hr />
-                                    <table cellpadding="10" border="1">
+                                    <table cellpadding="10" border="1" width="900">
                                         <tr>
                                             <td valign="top">
                                                 <span class="subHeader">SITES</span>
                                                 <asp:GridView ID="gvSites" runat="server" AllowPaging="True" AllowSorting="True"
                                                     AutoGenerateColumns="False" DataKeyNames="ID,VersionNumber" DataSourceID="SqlDataSourceAccountSites"
-                                                    SelectedRowStyle-BackColor="#CCCCCC" PageSize="15" EnablePersistedSelection="True" EnableSortingAndPagingCallbacks="True">
+                                                    SelectedRowStyle-BackColor="#CCCCCC" PageSize="15" EnablePersistedSelection="True"
+                                                    EnableSortingAndPagingCallbacks="True">
                                                     <Columns>
                                                         <asp:TemplateField ShowHeader="False">
                                                             <ItemTemplate>
                                                                 <asp:UpdatePanel ID="UpdatePanelSiteSelect" runat="server">
                                                                     <ContentTemplate>
-                                                                        <asp:LinkButton ID="lnkSelectSite" runat="server" CausesValidation="False" CommandName="Select"
-                                                                            Text="Select" CommandArgument='<%# Bind("ID") %>' OnCommand="lnkSelectSite_Command"></asp:LinkButton>
+                                                                        <div style="margin: 4px 4px 4px 4px;">
+                                                                            <asp:LinkButton ID="lnkSelectSite" runat="server" CausesValidation="False" CommandName="Select"
+                                                                                Text="Select" CommandArgument='<%# Bind("ID") %>' OnCommand="lnkSelectSite_Command"></asp:LinkButton>
+                                                                        </div>
                                                                     </ContentTemplate>
                                                                     <Triggers>
                                                                         <asp:PostBackTrigger ControlID="lnkSelectSite" />
@@ -101,7 +106,9 @@
                                                                 <asp:TextBox ID="TextBox1" runat="server" Text='<%# Bind("Name") %>'></asp:TextBox>
                                                             </EditItemTemplate>
                                                             <ItemTemplate>
-                                                                <asp:Label ID="Label1" runat="server" Text='<%# Bind("Name") %>'></asp:Label>
+                                                                <div style="margin: 4px 4px 4px 4px;">
+                                                                    <asp:Label ID="Label1" runat="server" Text='<%# Bind("Name") %>'></asp:Label>
+                                                                </div>
                                                             </ItemTemplate>
                                                         </asp:TemplateField>
                                                         <asp:BoundField DataField="RootFolderID" HeaderText="RootFolderID" SortExpression="RootFolderID"
@@ -135,21 +142,8 @@
                                                     </Triggers>
                                                 </asp:UpdatePanel>
                                             </td>
-                                            <td valign="top">
-                                                <span class="subHeader">FOLDER UPLOAD</span><br />
-                                                <asp:UpdatePanel ID="UpdatePanelFolderUpload" runat="server">
-                                                <ContentTemplate>
-                                                    <asp:AjaxFileUpload ID="AjaxFileUploadFolders" runat="server" 
-                                                        onuploadcomplete="AjaxFileUploadFolders_UploadComplete" 
-                                                         AllowedFileTypes="jpg,png,gif,jpeg,txt,xml,html,htm,js,json,css,xsd,xsl" />
-                                                </ContentTemplate>
-                                                </asp:UpdatePanel>
-                                            </td>
                                         </tr>
                                     </table>
-                                    
-                                    2. Files Grid,&nbsp; Subtract upload/f Credits 3. Create Files 4. Crediting 5. 
-                                    Editing 6. Admin / Reporting
                                 </ContentTemplate>
                                 <Triggers>
                                     <asp:PostBackTrigger ControlID="btnCreateSite" />
@@ -160,6 +154,137 @@
                         </asp:Panel>
                     </ItemTemplate>
                 </asp:FormView>
+                <div id="divUpload" style="display: none;">
+                    <table width="900">
+                        <tr>
+                            <td align="right">
+                                <input type="button" value="View Files" onclick="document.getElementById('divFolderFiles').style.display='block';document.getElementById('divUpload').style.display='none';document.getElementById('MainContent_btnRefreshFiles').click();" />
+                            </td>
+                        </tr>
+                    </table>
+                    <table cellpadding="10" border="1" width="900">
+                        <tr>
+                            <td valign="top">
+                                <span class="subHeader">FOLDER UPLOAD</span><br />
+                                <asp:UpdatePanel ID="UpdatePanelFolderUpload" runat="server">
+                                    <ContentTemplate>
+                                        <asp:AjaxFileUpload ID="AjaxFileUploadFolders" Width="100%" runat="server" OnUploadComplete="AjaxFileUploadFolders_UploadComplete"
+                                            AllowedFileTypes="jpg,png,gif,jpeg,txt,xml,html,htm,js,json,css,xsd,xsl" />
+                                    </ContentTemplate>
+                                    <Triggers>
+                                        <asp:PostBackTrigger ControlID="AjaxFileUploadFolders" />
+                                    </Triggers>
+                                </asp:UpdatePanel>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="divFolderFiles">
+                    <asp:Panel ID="PanelFolderFiles" Visible="false" runat="server">
+                        <table width="900">
+                            <tr>
+                                <td align="right">
+                                    <input type="button" value="Upload Files" onclick="document.getElementById('divUpload').style.display='block';document.getElementById('divFolderFiles').style.display='none';" />
+                                </td>
+                            </tr>
+                        </table>
+                        <table width="900" cellpadding="10" border="1">
+                            <tr>
+                                <td valign="top">
+                                    <asp:GridView ID="gvFileType" runat="server" AutoGenerateColumns="False" DataKeyNames="ID"
+                                        DataSourceID="SqlDataSourceFileType" ShowHeader="False" Width="100%">
+                                        <Columns>
+                                            <asp:TemplateField HeaderText="ID" SortExpression="ID">
+                                                <ItemTemplate>
+                                                    <asp:HiddenField ID="LabelFileTypeID" runat="server" Value='<%# Bind("ID") %>'></asp:HiddenField>
+                                                    <div class="subHeader" style="width: 100%; text-align: center;">
+                                                        <asp:Label ID="LabelFileTypeName" runat="server" Text='<%# Eval("Name").ToString()+" Files " %>'></asp:Label>(<asp:Label
+                                                            ID="LabelFileTypeExtension" runat="server" Text='<%# Bind("Extension") %>'></asp:Label>)
+                                                    </div>
+                                                    <hr />
+                                                    <asp:ListView ID="ListViewFiles" Style="width: 100%;" runat="server" GroupItemCount="5"
+                                                        DataSourceID="SqlDataSourceListFile">
+                                                        <EmptyDataTemplate>
+                                                            <table runat="server" style="background-color: #FFFFFF; border-collapse: collapse;
+                                                                border-color: #999999; border-style: none; border-width: 1px;">
+                                                                <tr>
+                                                                    <td>
+                                                                        No files found.
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </EmptyDataTemplate>
+                                                        <EmptyItemTemplate>
+                                                            <td runat="server" />
+                                                        </EmptyItemTemplate>
+                                                        <GroupTemplate>
+                                                            <tr id="itemPlaceholderContainer" runat="server">
+                                                                <td id="itemPlaceholder" runat="server">
+                                                                </td>
+                                                            </tr>
+                                                        </GroupTemplate>
+                                                        <ItemTemplate>
+                                                            <td runat="server" style="background-color: #E0FFFF; color: #333333;">
+                                                                <asp:HiddenField ID="HiddenID" runat="server" Value='<%# Eval("ID") %>' />
+                                                                <asp:HiddenField ID="HiddenFilePath" runat="server" Value='<%# Eval("FilePath") %>' />
+                                                                <asp:HiddenField ID="HiddenTextFileContents" runat="server" Value='<%# Eval("TextFileContents") %>' />
+                                                                <div style="spacing: 5px 5px 5px 5px; height: 100%; width: 165px; text-align: center;
+                                                                    vertical-align: middle; padding: 5px 5px 5p 5px;">
+                                                                    <asp:Image ID="imgFileURILabel" runat="server" Width="145px" Height="145px" ImageUrl='<%# Eval("FileURI") %>' />
+                                                                    <asp:Label Style="display: block; font-size: 11px; font-weight: bold; width: 145px;
+                                                                        text-align: center; word-wrap: break-word;" ID="FileNameLabel" runat="server"
+                                                                        Text='<%# Eval("FileName") %>' />
+                                                                    <asp:Label Style="display: block; font-size: 11px;" ID="VersionTimestampLabel" runat="server"
+                                                                        Text='<%# Eval("VersionTimestamp") %>' />
+                                                                </div>
+                                                            </td>
+                                                        </ItemTemplate>
+                                                        <LayoutTemplate>
+                                                            <table runat="server">
+                                                                <tr runat="server">
+                                                                    <td runat="server">
+                                                                        <table id="groupPlaceholderContainer" runat="server" border="1" style="background-color: #FFFFFF;
+                                                                            border-collapse: collapse; border-color: #999999; border-style: none; border-width: 1px;
+                                                                            font-family: Verdana, Arial, Helvetica, sans-serif;">
+                                                                            <tr id="groupPlaceholder" runat="server">
+                                                                            </tr>
+                                                                        </table>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr runat="server">
+                                                                    <td runat="server" style="text-align: center; background-color: #5D7B9D; font-family: Verdana, Arial, Helvetica, sans-serif;
+                                                                        color: #FFFFFF">
+                                                                        <asp:DataPager ID="DataPagerMain" runat="server" PageSize="12">
+                                                                            <Fields>
+                                                                                <asp:NumericPagerField />
+                                                                            </Fields>
+                                                                        </asp:DataPager>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </LayoutTemplate>
+                                                    </asp:ListView>
+                                                    <asp:SqlDataSource ID="SqlDataSourceListFile" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionString %>"
+                                                        SelectCommand="SELECT [File].ID, [File].VersionTimestamp, [File].FileName, [File].FileURI, [File].FilePath, [File].FileSize, [File].TextFileContents FROM [File] INNER JOIN FileCoupling ON [File].ID = FileCoupling.FileID WHERE ([File].CurrentVersion = 1) AND ([File].FileTypeID = @FileTypeID) AND (FileCoupling.FolderID = @FolderID)">
+                                                        <SelectParameters>
+                                                            <asp:ControlParameter DbType="Guid" ControlID="LabelFileTypeID" Name="FileTypeID"
+                                                                PropertyName="Value" />
+                                                            <asp:SessionParameter DbType="Guid" Name="FolderID" SessionField="SELECTEDFOLDERID" />
+                                                        </SelectParameters>
+                                                    </asp:SqlDataSource>
+                                                </ItemTemplate>
+                                            </asp:TemplateField>
+                                        </Columns>
+                                    </asp:GridView>
+                                    <asp:SqlDataSource ID="SqlDataSourceFileType" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionString %>"
+                                        SelectCommand="SELECT [ID], [Name], [Extension] FROM [FileType] ORDER BY [Name]">
+                                    </asp:SqlDataSource>
+                                </td>
+                            </tr>
+                        </table>
+                    </asp:Panel>
+                </div>
+                2. Subtract upload Credits 3. Create Files 4. Crediting 5. Editing 6. Admin / Reporting
                 <asp:FormView ID="FormViewCreateAccount" runat="server" DataSourceID="SqlDataSourceFormViewCreateAccount">
                     <ItemTemplate>
                         <asp:Panel ID="PanelCreateAccountHeader" runat="server" Visible='<%# (Eval("AccountCount").ToString().Equals("0")) %>'>
@@ -241,10 +366,19 @@ WHERE (PackageCredit.PackageID = '00000000-0000-0000-0000-000000000001')" Select
                     </SelectParameters>
                 </asp:SqlDataSource>
             </ContentTemplate>
+            <Triggers>
+                <asp:PostBackTrigger ControlID="btnRefreshFiles" />
+            </Triggers>
         </asp:UpdatePanel>
         <asp:UpdateProgress ID="UpdateProgressMain" runat="server">
             <ProgressTemplate>
                 <asp:Panel ID="PanelProgress" runat="server" CssClass="progressPanel">
+                    <div style="border: 1px dotted black; font-size: 22px; position: absolute; width: 200px;
+                        height: 100px; left: 50%; top: 50%; margin: -50px 0px 0px -100px; text-align: center;
+                        display: table-cell; vertical-align: middle;">
+                        <br />
+                        Loading...
+                    </div>
                 </asp:Panel>
                 <asp:DropShadowExtender ID="PanelProgress_DropShadowExtender" runat="server" Enabled="True"
                     TargetControlID="PanelProgress">
