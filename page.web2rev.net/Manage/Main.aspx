@@ -184,7 +184,7 @@
                                 <asp:UpdatePanel ID="UpdatePanelFolderUpload" runat="server">
                                     <ContentTemplate>
                                         <asp:AjaxFileUpload ID="AjaxFileUploadFolders" Width="100%" runat="server" OnClientUploadError="uploadError" OnUploadComplete="AjaxFileUploadFolders_UploadComplete"
-                                              OnClientUploadComplete="uploadComplete" ThrobberID="lblThrobber" AllowedFileTypes="jpg,png,gif,jpeg,txt,xml,html,htm,js,json,css,xsd,xsl,flv,mp3" />
+                                              OnClientUploadComplete="uploadComplete" ThrobberID="lblThrobber" AllowedFileTypes="jpg,png,gif,jpeg,txt,xml,html,htm,js,json,css,xsd,xsl,mp4,webm,mp3" />
                                         <asp:Label runat="server" ID="lblThrobber" style="display:none;">Uploading...</asp:Label>  
                                     </ContentTemplate>
                                     <Triggers>
@@ -249,9 +249,11 @@
                                                                     <a style='<%# Eval("FileTypeName").ToString().Equals("Image")?"display: block; font-size: 11px;":"display: none;" %>' target="_blank" href='<%# Eval("FileURI") %>'>
                                                                         <asp:Image ID="imgFileURILabel" runat="server" Visible='<%# Eval("FileTypeName").ToString().Equals("Image") %>' Width="145px" Height="145px" ImageUrl='<%# Eval("FileURI") %>' />
                                                                     </a>
-                                                                    <asp:Label Style="display: block; font-size: 12px; margin: 5px 0px 0px 5px; font-weight: bold; width: 145px;
-                                                                        text-align: center; word-wrap: break-word;" ID="FileNameLabel" runat="server"
-                                                                        Text='<%# Eval("FileName") %>' />
+                                                                    <a style="display: block; font-size: 12px;" target="_blank" href='<%# Eval("FileURI") %>'>
+                                                                        <asp:Label Style="display: block; font-size: 12px; margin: 5px 0px 0px 5px; font-weight: bold;
+                                                                            width: 145px; text-align: center; word-wrap: break-word;" ID="FileNameLabel"
+                                                                            runat="server" Text='<%# Eval("FileName") %>' />
+                                                                    </a>
                                                                     <div style="display: table; margin-bottom: 5px; width: 100%; padding: 2px 2px 2px 2px;
                                                                         border-spacing: 2px 2px 2px 2px; text-align: center;">
                                                                         <a style="display: table-cell; font-size: 11px; padding: 2px 2px 2px 2px; border-spacing: 2px 2px 2px 2px;
@@ -320,7 +322,7 @@
                         </table>
                     </asp:Panel>
                 </div>
-                2. Subtract upload Credits 3. Create Files 4. Crediting 5. Editing 6. Admin / Reporting
+                2. Display message for not enough Credits 3. Create Files 4. Crediting 5. Editing 6. Admin / Reporting
                 <asp:FormView ID="FormViewCreateAccount" runat="server" DataSourceID="SqlDataSourceFormViewCreateAccount">
                     <ItemTemplate>
                         <asp:Panel ID="PanelCreateAccountHeader" runat="server" Visible='<%# (Eval("AccountCount").ToString().Equals("0")) %>'>
