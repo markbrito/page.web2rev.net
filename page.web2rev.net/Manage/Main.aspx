@@ -24,7 +24,12 @@
         function uploadError(sender, args) {
             alert("Error Uploading File: " + args.get_fileName() + " Error: " +
                     args.get_errorMessage());
-        }  
+        }
+        var hrefPageBuilder = null;
+        function pageBuilder(a) {
+            hrefPageBuilder = a;
+            setTimeout("hrefPageBuilder=null;document.getElementById('MainContent_btnDecrementBuilderUsage').click();", 250);
+        }
     </script>
 </asp:Content>
 <asp:Content ID="ContentMain" ContentPlaceHolderID="MainContent" runat="server">
@@ -266,8 +271,13 @@
                                                                         <asp:ConfirmButtonExtender ID="lnkDeleteFile_ConfirmButtonExtender" runat="server"
                                                                             ConfirmText="Are you sure you want to delete this file?" Enabled="True" TargetControlID="lnkDeleteFile">
                                                                         </asp:ConfirmButtonExtender>
-                                                                        <a target="_blank" style='<%# ("Page,Script,Style,Text".IndexOf(Eval("FileTypeName").ToString())>=0)?"display: table-cell;padding: 2px 2px 2px 2px;border-spacing: 2px 2px 2px 2px;text-align:center; font-size: 11px;": "display: none;" %>'
-                                                                            href='<%# Eval("FileURI") %>'>Edit</a>
+                                                                        <asp:Panel ID="PanelHrefEdit" Visible='<%# ("Page,Script,Style,Text".IndexOf(Eval("FileTypeName").ToString())>=0) %>'
+                                                                            runat="server">
+                                                                            <a target="_blank" onclick="if(hrefPageBuilder!=null){event.preventDefault();return false;}else{pageBuilder(this);return true;}"
+                                                                                style="display: table-cell; padding: 2px 2px 2px 2px; border-spacing: 2px 2px 2px 2px;
+                                                                                text-align: center; font-size: 11px;" href='<%# Eval("FileURI") %>' runat="server">
+                                                                                Edit</a>
+                                                                        </asp:Panel>
                                                                     </div>
                                                                     <asp:Label Style="display: block; font-size: 11px;" ID="VersionTimestampLabel" runat="server"
                                                                         Text='<%# Eval("VersionTimestamp") %>' />
@@ -405,6 +415,7 @@ WHERE (PackageCredit.PackageID = '00000000-0000-0000-0000-000000000001')" Select
                 </asp:SqlDataSource>
             </ContentTemplate>
             <Triggers>
+                <asp:PostBackTrigger ControlID="btnDecrementBuilderUsage" />
                 <asp:PostBackTrigger ControlID="btnRefreshFiles" />
             </Triggers>
         </asp:UpdatePanel>
