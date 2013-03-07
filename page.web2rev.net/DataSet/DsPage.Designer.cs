@@ -4257,8 +4257,8 @@ namespace page.web2rev.net.DataSet.DsPageTableAdapters {
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
             this._commandCollection[1] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[1].Connection = this.Connection;
-            this._commandCollection[1].CommandText = @"UPDATE AccountCredit SET CurrentVersion = 0 FROM AccountCredit INNER JOIN CreditType ON AccountCredit.CreditTypeID = CreditType.ID WHERE (AccountCredit.AccountID = @AccountID) AND (AccountCredit.CurrentVersion = 1) AND (CreditType.Name = @CreditTypeName) 
-AND  AccountCredit.CurrentVersion = 1 and (AccountCredit.VersionNumber=@VersionNumber)";
+            this._commandCollection[1].CommandText = @"UPDATE AccountCredit SET CurrentVersion = 0 FROM AccountCredit INNER JOIN CreditType ON AccountCredit.CreditTypeID = CreditType.ID WHERE (AccountCredit.AccountID = @AccountID) AND (CreditType.Name = @CreditTypeName) 
+and (AccountCredit.VersionNumber!=@VersionNumber)";
             this._commandCollection[1].CommandType = global::System.Data.CommandType.Text;
             this._commandCollection[1].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@AccountID", global::System.Data.SqlDbType.UniqueIdentifier, 16, global::System.Data.ParameterDirection.Input, 0, 0, "AccountID", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._commandCollection[1].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@CreditTypeName", global::System.Data.SqlDbType.VarChar, 64, global::System.Data.ParameterDirection.Input, 0, 0, "Name", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
