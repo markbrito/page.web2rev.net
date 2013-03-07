@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.IO;
 using page.web2rev.net.DataSet;
 using page.web2rev.net.DataSet.DsPageTableAdapters;
+using AjaxControlToolkit;
 namespace page.web2rev.net.Manage
 {
     public partial class Main : System.Web.UI.Page
@@ -33,6 +34,7 @@ namespace page.web2rev.net.Manage
             SqlDataSourceAddCredits.DataBind();
             SqlDataSourceAddCredits.Insert();
             SqlDataSourceAddCredits.Update();
+            RefreshCredits();
             TextBoxNewAccountID.Text = Guid.NewGuid().ToString();
             FormViewAccount.DataBind();
             FormViewCreateAccount.DataBind();
@@ -54,6 +56,7 @@ namespace page.web2rev.net.Manage
             DsPage.AccountCreditDataTable tblCredit = adptrCredit.GetDataByCreditTypeName(new Guid(Session["SELECTEDACCOUNTID"].ToString()), "Site");
             adptrCredit.UpdateCreditAmountByCreditTypeName(-1, new Guid(Session["SELECTEDACCOUNTID"].ToString()), "Site");
             adptrCredit.ArchiveCurrentCreditRecord(new Guid(Session["SELECTEDACCOUNTID"].ToString()), "Site", tblCredit[0].VersionNumber);
+            RefreshCredits(); 
             ((SqlDataSource)FormViewAccount.FindControl("SqlDataSourceAccountSites"))
                 .DataBind();
             ((GridView)FormViewAccount.FindControl("gvSites"))
@@ -72,6 +75,7 @@ namespace page.web2rev.net.Manage
                 new Guid(Session["SELECTEDACCOUNTID"].ToString()), "Page Builder");
             adptrCredit.UpdateCreditAmountByCreditTypeName(-1, new Guid(Session["SELECTEDACCOUNTID"].ToString()), "Page Builder");
             adptrCredit.ArchiveCurrentCreditRecord(new Guid(Session["SELECTEDACCOUNTID"].ToString()), "Page Builder",tblCredit[0].VersionNumber);
+            RefreshCredits();
         }
 
         protected void ddlAccount_SelectedIndexChanged(object sender, EventArgs e)
@@ -83,6 +87,7 @@ namespace page.web2rev.net.Manage
             Session["SELECTEDACCOUNTNAME"] = Regex.Replace(ddl.SelectedItem.Text, "[^A-Za-z0-9]", "");
             int cred = (int)acctCreditAdptr.GetSiteCreditsByAccountID(acctID);
             ((Button)FormViewAccount.FindControl("btnCreateSite")).Enabled = (cred > 0);
+            RefreshCredits();
         }
 
         protected void ddlAccount_DataBound(object sender, EventArgs e)
@@ -111,6 +116,9 @@ namespace page.web2rev.net.Manage
                 TextBoxSelectedSiteRootFolderID.Text = tblSite[0].RootFolderID.ToString();
                 ((SqlDataSource)FormViewAccount.FindControl("SqlDataSourceAccountSites"))
                     .DataBind();
+                DropDownList ddlAccount=((DropDownList)FormViewAccount.FindControl("ddlAccount"));
+                ddlAccount.DataBind();
+                ddlAccount_SelectedIndexChanged(ddlAccount, null);
                 TreeView tv = ((TreeView)FormViewAccount.FindControl("TreeViewSiteFolders"));
                 tv.Nodes.Clear();
                 FolderTableAdapter adptrFolder = new FolderTableAdapter();
@@ -138,7 +146,7 @@ namespace page.web2rev.net.Manage
                     node.Expand();
                     tv.Nodes.Add(node);
                 }
-               
+                RefreshCredits();
             }
         }
 
@@ -198,6 +206,7 @@ namespace page.web2rev.net.Manage
             Session["SELECTEDFOLDERID"] = tv.SelectedNode.Value;
             PanelFolderFiles.Visible = true;
             gvFileType.DataBind();
+            RefreshCredits();
         }
 
         protected void AjaxFileUploadFolders_UploadComplete(object sender, AjaxControlToolkit.AjaxFileUploadEventArgs e)
@@ -245,15 +254,22 @@ namespace page.web2rev.net.Manage
                 new Guid(Session["SELECTEDACCOUNTID"].ToString()), "Disk Space"); 
             adptrCredit.UpdateCreditAmountByCreditTypeName(-1 * e.FileSize, new Guid(Session["SELECTEDACCOUNTID"].ToString()), "Disk Space");
             adptrCredit.ArchiveCurrentCreditRecord(new Guid(Session["SELECTEDACCOUNTID"].ToString()),"Disk Space", tblCredit[0].VersionNumber);
-            PanelFolderFiles.Visible = true;
+            RefreshCredits();
+                PanelFolderFiles.Visible = true;
             TextBoxSelectedServerPathFolder.Text = Session["SELECTEDSERVERPATHFOLDER"].ToString();
             TextBoxSelectedFolderID.Text = Session["SELECTEDFOLDERID"].ToString();
             PanelFolderFiles.Visible = true;
             gvFileType.DataBind();
         }
 
+        private void RefreshCredits()
+        {
+            ((GridView)FormViewAccount.FindControl("GridViewCredits")).DataBind();
+        }
+
         protected void btnRefreshFiles_Click(object sender, EventArgs e)
         {
+            RefreshCredits();
             PanelFolderFiles.Visible = true;
             gvFileType.DataBind();
         }
@@ -263,11 +279,27 @@ namespace page.web2rev.net.Manage
             if (e.CommandName.Equals("DeleteFile"))
             {
                 string[] args = e.CommandArgument.ToString().Split(new char[] { ',' });
+                Guid fileID = new Guid(args[0]);
                 File.Delete(Server.MapPath(args[2]));
                 FileCouplingTableAdapter adptCoupling = new FileCouplingTableAdapter();
                 FileTableAdapter adptFile = new FileTableAdapter();
+                FileTypeTableAdapter adptrType=new FileTypeTableAdapter();
+                DsPage.FileDataTable tblFile = adptFile.GetDataByID(fileID);
+                DsPage.FileTypeDataTable tblType = adptrType.GetDataByID(tblFile[0].FileTypeID);
+                string fileTypeName = tblType[0].Name;
                 adptCoupling.Delete(new Guid(args[3]));
-                adptFile.DeleteFile(new Guid(args[0]), int.Parse(args[1]));
+                adptFile.DeleteFile(fileID, int.Parse(args[1]));
+                string creditType = fileTypeName.Equals("Page") ? "Page" : (fileTypeName.Equals("Image") ? "Image" : "File");
+                AccountCreditTableAdapter adptrCredit = new AccountCreditTableAdapter();
+                DsPage.AccountCreditDataTable tblCredit = adptrCredit.GetDataByCreditTypeName(
+                    new Guid(Session["SELECTEDACCOUNTID"].ToString()), creditType);
+                adptrCredit.UpdateCreditAmountByCreditTypeName(1, new Guid(Session["SELECTEDACCOUNTID"].ToString()), creditType);
+                adptrCredit.ArchiveCurrentCreditRecord(new Guid(Session["SELECTEDACCOUNTID"].ToString()), creditType, tblCredit[0].VersionNumber);
+                tblCredit = adptrCredit.GetDataByCreditTypeName(
+                    new Guid(Session["SELECTEDACCOUNTID"].ToString()), "Disk Space"); 
+                adptrCredit.UpdateCreditAmountByCreditTypeName(tblFile[0].FileSize, new Guid(Session["SELECTEDACCOUNTID"].ToString()), "Disk Space");
+                adptrCredit.ArchiveCurrentCreditRecord(new Guid(Session["SELECTEDACCOUNTID"].ToString()), "Disk Space", tblCredit[0].VersionNumber);
+                RefreshCredits();
                 PanelFolderFiles.Visible = true;
                 TextBoxSelectedServerPathFolder.Text = Session["SELECTEDSERVERPATHFOLDER"].ToString();
                 TextBoxSelectedFolderID.Text = Session["SELECTEDFOLDERID"].ToString();

@@ -13,6 +13,19 @@
             font-size: 16px;
         }
     </style>
+    <script language="javascript" type="text/javascript">
+        var timeout = null;
+        function uploadComplete(sender, args) {
+            if (timeout != null) {
+                clearTimeout(timeout);
+            }
+            timeout = setTimeout("timeout=null;document.getElementById('<%= btnRefreshFiles.ClientID %>').click();", 1800);
+        }
+        function uploadError(sender, args) {
+            alert("Error Uploading File: " + args.get_fileName() + " Error: " +
+                    args.get_errorMessage());
+        }  
+    </script>
 </asp:Content>
 <asp:Content ID="ContentMain" ContentPlaceHolderID="MainContent" runat="server">
     <div class="divMainContent">
@@ -44,7 +57,7 @@
                                         OnDataBound="ddlAccount_DataBound" 
                                         onselectedindexchanged="ddlAccount_SelectedIndexChanged">
                                     </asp:DropDownList>
-                                    <span style="position: absolute; top: 0px; right: 0px;">
+                                    <span style="position: fixed; top: 0px; right: 0px;">
                                         <asp:GridView ID="GridViewCredits" BackColor="White" ForeColor="Black" runat="server"
                                             ShowHeader="True" DataSourceID="SqlDataSourceCredits">
                                         </asp:GridView>
@@ -170,8 +183,9 @@
                                 <span class="subHeader">FOLDER UPLOAD</span><br />
                                 <asp:UpdatePanel ID="UpdatePanelFolderUpload" runat="server">
                                     <ContentTemplate>
-                                        <asp:AjaxFileUpload ID="AjaxFileUploadFolders" Width="100%" runat="server" OnUploadComplete="AjaxFileUploadFolders_UploadComplete"
-                                            AllowedFileTypes="jpg,png,gif,jpeg,txt,xml,html,htm,js,json,css,xsd,xsl,flv,mp3" />
+                                        <asp:AjaxFileUpload ID="AjaxFileUploadFolders" Width="100%" runat="server" OnClientUploadError="uploadError" OnUploadComplete="AjaxFileUploadFolders_UploadComplete"
+                                              OnClientUploadComplete="uploadComplete" ThrobberID="lblThrobber" AllowedFileTypes="jpg,png,gif,jpeg,txt,xml,html,htm,js,json,css,xsd,xsl,flv,mp3" />
+                                        <asp:Label runat="server" ID="lblThrobber" style="display:none;">Uploading...</asp:Label>  
                                     </ContentTemplate>
                                     <Triggers>
                                         <asp:PostBackTrigger ControlID="AjaxFileUploadFolders" />

@@ -148,6 +148,15 @@ namespace page.web2rev.net.Manage {
         protected global::AjaxControlToolkit.AjaxFileUpload AjaxFileUploadFolders;
         
         /// <summary>
+        /// lblThrobber control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblThrobber;
+        
+        /// <summary>
         /// PanelFolderFiles control.
         /// </summary>
         /// <remarks>
