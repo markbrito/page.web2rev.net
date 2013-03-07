@@ -1833,6 +1833,8 @@ namespace page.web2rev.net.DataSet {
             
             private global::System.Data.DataColumn columnFileURI;
             
+            private global::System.Data.DataColumn columnDeleted;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public FileDataTable() {
@@ -1948,6 +1950,14 @@ namespace page.web2rev.net.DataSet {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn DeletedColumn {
+                get {
+                    return this.columnDeleted;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -1983,7 +1993,7 @@ namespace page.web2rev.net.DataSet {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public FileRow AddFileRow(System.Guid ID, bool CurrentVersion, int VersionNumber, System.DateTime VersionTimestamp, FileTypeRow parentFileTypeRowByFK_File_FileType, string FileName, string FilePath, long FileSize, string TextFileContents, string FileURI) {
+            public FileRow AddFileRow(System.Guid ID, bool CurrentVersion, int VersionNumber, System.DateTime VersionTimestamp, FileTypeRow parentFileTypeRowByFK_File_FileType, string FileName, string FilePath, long FileSize, string TextFileContents, string FileURI, bool Deleted) {
                 FileRow rowFileRow = ((FileRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         ID,
@@ -1995,7 +2005,8 @@ namespace page.web2rev.net.DataSet {
                         FilePath,
                         FileSize,
                         TextFileContents,
-                        FileURI};
+                        FileURI,
+                        Deleted};
                 if ((parentFileTypeRowByFK_File_FileType != null)) {
                     columnValuesArray[4] = parentFileTypeRowByFK_File_FileType[0];
                 }
@@ -2039,6 +2050,7 @@ namespace page.web2rev.net.DataSet {
                 this.columnFileSize = base.Columns["FileSize"];
                 this.columnTextFileContents = base.Columns["TextFileContents"];
                 this.columnFileURI = base.Columns["FileURI"];
+                this.columnDeleted = base.Columns["Deleted"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -2064,6 +2076,8 @@ namespace page.web2rev.net.DataSet {
                 base.Columns.Add(this.columnTextFileContents);
                 this.columnFileURI = new global::System.Data.DataColumn("FileURI", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnFileURI);
+                this.columnDeleted = new global::System.Data.DataColumn("Deleted", typeof(bool), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnDeleted);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnID,
                                 this.columnVersionNumber}, true));
@@ -2071,7 +2085,6 @@ namespace page.web2rev.net.DataSet {
                 this.columnCurrentVersion.AllowDBNull = false;
                 this.columnVersionNumber.AllowDBNull = false;
                 this.columnVersionTimestamp.AllowDBNull = false;
-                this.columnFileTypeID.AllowDBNull = false;
                 this.columnFileName.AllowDBNull = false;
                 this.columnFileName.MaxLength = 1024;
                 this.columnFilePath.AllowDBNull = false;
@@ -3462,7 +3475,12 @@ namespace page.web2rev.net.DataSet {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public System.Guid FileTypeID {
                 get {
-                    return ((global::System.Guid)(this[this.tableFile.FileTypeIDColumn]));
+                    try {
+                        return ((global::System.Guid)(this[this.tableFile.FileTypeIDColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'FileTypeID\' in table \'File\' is DBNull.", e);
+                    }
                 }
                 set {
                     this[this.tableFile.FileTypeIDColumn] = value;
@@ -3531,6 +3549,22 @@ namespace page.web2rev.net.DataSet {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Deleted {
+                get {
+                    try {
+                        return ((bool)(this[this.tableFile.DeletedColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'Deleted\' in table \'File\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableFile.DeletedColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public FileTypeRow FileTypeRow {
                 get {
                     return ((FileTypeRow)(this.GetParentRow(this.Table.ParentRelations["FK_File_FileType"])));
@@ -3538,6 +3572,18 @@ namespace page.web2rev.net.DataSet {
                 set {
                     this.SetParentRow(value, this.Table.ParentRelations["FK_File_FileType"]);
                 }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool IsFileTypeIDNull() {
+                return this.IsNull(this.tableFile.FileTypeIDColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void SetFileTypeIDNull() {
+                this[this.tableFile.FileTypeIDColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -3550,6 +3596,18 @@ namespace page.web2rev.net.DataSet {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public void SetTextFileContentsNull() {
                 this[this.tableFile.TextFileContentsColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool IsDeletedNull() {
+                return this.IsNull(this.tableFile.DeletedColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void SetDeletedNull() {
+                this[this.tableFile.DeletedColumn] = global::System.Convert.DBNull;
             }
         }
         
@@ -4191,7 +4249,7 @@ namespace page.web2rev.net.DataSet.DsPageTableAdapters {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private void InitCommandCollection() {
-            this._commandCollection = new global::System.Data.SqlClient.SqlCommand[2];
+            this._commandCollection = new global::System.Data.SqlClient.SqlCommand[5];
             this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[0].Connection = this.Connection;
             this._commandCollection[0].CommandText = "SELECT ID, CurrentVersion, VersionNumber, VersionTimestamp, AccountID, CreditType" +
@@ -4199,11 +4257,37 @@ namespace page.web2rev.net.DataSet.DsPageTableAdapters {
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
             this._commandCollection[1] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[1].Connection = this.Connection;
-            this._commandCollection[1].CommandText = "select isnull( sum(Credits) ,0) as Credits from AccountCredit where AccountID=@Ac" +
+            this._commandCollection[1].CommandText = @"UPDATE AccountCredit SET CurrentVersion = 0 FROM AccountCredit INNER JOIN CreditType ON AccountCredit.CreditTypeID = CreditType.ID WHERE (AccountCredit.AccountID = @AccountID) AND (AccountCredit.CurrentVersion = 1) AND (CreditType.Name = @CreditTypeName) 
+AND  AccountCredit.CurrentVersion = 1 and (AccountCredit.VersionNumber=@VersionNumber)";
+            this._commandCollection[1].CommandType = global::System.Data.CommandType.Text;
+            this._commandCollection[1].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@AccountID", global::System.Data.SqlDbType.UniqueIdentifier, 16, global::System.Data.ParameterDirection.Input, 0, 0, "AccountID", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._commandCollection[1].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@CreditTypeName", global::System.Data.SqlDbType.VarChar, 64, global::System.Data.ParameterDirection.Input, 0, 0, "Name", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._commandCollection[1].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@VersionNumber", global::System.Data.SqlDbType.Int, 4, global::System.Data.ParameterDirection.Input, 0, 0, "VersionNumber", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._commandCollection[2] = new global::System.Data.SqlClient.SqlCommand();
+            this._commandCollection[2].Connection = this.Connection;
+            this._commandCollection[2].CommandText = @"SELECT AccountCredit.ID, AccountCredit.CurrentVersion, AccountCredit.VersionNumber, AccountCredit.VersionTimestamp, AccountCredit.AccountID, AccountCredit.CreditTypeID, AccountCredit.Credits FROM AccountCredit INNER JOIN CreditType ON AccountCredit.CreditTypeID = CreditType.ID WHERE (AccountCredit.CurrentVersion = 1) AND (AccountCredit.AccountID = @AccountID) AND (CreditType.Name = @CreditTypeName)";
+            this._commandCollection[2].CommandType = global::System.Data.CommandType.Text;
+            this._commandCollection[2].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@AccountID", global::System.Data.SqlDbType.UniqueIdentifier, 16, global::System.Data.ParameterDirection.Input, 0, 0, "AccountID", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._commandCollection[2].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@CreditTypeName", global::System.Data.SqlDbType.VarChar, 64, global::System.Data.ParameterDirection.Input, 0, 0, "Name", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._commandCollection[3] = new global::System.Data.SqlClient.SqlCommand();
+            this._commandCollection[3].Connection = this.Connection;
+            this._commandCollection[3].CommandText = "select isnull( sum(Credits) ,0) as Credits from AccountCredit where AccountID=@Ac" +
                 "countID and CreditTypeID=\'00000000-0000-0000-0000-000000000002\' and CurrentVersi" +
                 "on=1";
-            this._commandCollection[1].CommandType = global::System.Data.CommandType.Text;
-            this._commandCollection[1].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@AccountID", global::System.Data.SqlDbType.UniqueIdentifier, 16, global::System.Data.ParameterDirection.Input, 0, 0, "AccountID", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._commandCollection[3].CommandType = global::System.Data.CommandType.Text;
+            this._commandCollection[3].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@AccountID", global::System.Data.SqlDbType.UniqueIdentifier, 16, global::System.Data.ParameterDirection.Input, 0, 0, "AccountID", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._commandCollection[4] = new global::System.Data.SqlClient.SqlCommand();
+            this._commandCollection[4].Connection = this.Connection;
+            this._commandCollection[4].CommandText = @"INSERT INTO [dbo].[AccountCredit] ([ID], [CurrentVersion], [VersionNumber], [VersionTimestamp], [AccountID], [CreditTypeID], [Credits]) 
+SELECT
+[ID], 1, [VersionNumber]+1,getdate(), [AccountID], [CreditTypeID], a.[Credits]+CAST(@CreditAmount as int) as [Credits] FROM AccountCredit a
+ INNER JOIN CreditType ON a.CreditTypeID = CreditType.ID 
+WHERE (a.AccountID = @AccountID) AND (a.CurrentVersion = 1) AND (CreditType.Name = @CreditTypeName) 
+AND  a.CurrentVersion = 1";
+            this._commandCollection[4].CommandType = global::System.Data.CommandType.Text;
+            this._commandCollection[4].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@CreditAmount", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._commandCollection[4].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@AccountID", global::System.Data.SqlDbType.UniqueIdentifier, 16, global::System.Data.ParameterDirection.Input, 0, 0, "AccountID", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._commandCollection[4].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@CreditTypeName", global::System.Data.SqlDbType.VarChar, 64, global::System.Data.ParameterDirection.Input, 0, 0, "Name", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -4225,6 +4309,44 @@ namespace page.web2rev.net.DataSet.DsPageTableAdapters {
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, true)]
         public virtual DsPage.AccountCreditDataTable GetData() {
             this.Adapter.SelectCommand = this.CommandCollection[0];
+            DsPage.AccountCreditDataTable dataTable = new DsPage.AccountCreditDataTable();
+            this.Adapter.Fill(dataTable);
+            return dataTable;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Fill, false)]
+        public virtual int FillByCreditTypeName(DsPage.AccountCreditDataTable dataTable, System.Guid AccountID, string CreditTypeName) {
+            this.Adapter.SelectCommand = this.CommandCollection[2];
+            this.Adapter.SelectCommand.Parameters[0].Value = ((System.Guid)(AccountID));
+            if ((CreditTypeName == null)) {
+                this.Adapter.SelectCommand.Parameters[1].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.SelectCommand.Parameters[1].Value = ((string)(CreditTypeName));
+            }
+            if ((this.ClearBeforeFill == true)) {
+                dataTable.Clear();
+            }
+            int returnValue = this.Adapter.Fill(dataTable);
+            return returnValue;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, false)]
+        public virtual DsPage.AccountCreditDataTable GetDataByCreditTypeName(System.Guid AccountID, string CreditTypeName) {
+            this.Adapter.SelectCommand = this.CommandCollection[2];
+            this.Adapter.SelectCommand.Parameters[0].Value = ((System.Guid)(AccountID));
+            if ((CreditTypeName == null)) {
+                this.Adapter.SelectCommand.Parameters[1].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.SelectCommand.Parameters[1].Value = ((string)(CreditTypeName));
+            }
             DsPage.AccountCreditDataTable dataTable = new DsPage.AccountCreditDataTable();
             this.Adapter.Fill(dataTable);
             return dataTable;
@@ -4351,8 +4473,39 @@ namespace page.web2rev.net.DataSet.DsPageTableAdapters {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual object GetSiteCreditsByAccountID(System.Guid AccountID) {
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, false)]
+        public virtual int ArchiveCurrentCreditRecord(System.Guid AccountID, string CreditTypeName, int VersionNumber) {
             global::System.Data.SqlClient.SqlCommand command = this.CommandCollection[1];
+            command.Parameters[0].Value = ((System.Guid)(AccountID));
+            if ((CreditTypeName == null)) {
+                command.Parameters[1].Value = global::System.DBNull.Value;
+            }
+            else {
+                command.Parameters[1].Value = ((string)(CreditTypeName));
+            }
+            command.Parameters[2].Value = ((int)(VersionNumber));
+            global::System.Data.ConnectionState previousConnectionState = command.Connection.State;
+            if (((command.Connection.State & global::System.Data.ConnectionState.Open) 
+                        != global::System.Data.ConnectionState.Open)) {
+                command.Connection.Open();
+            }
+            int returnValue;
+            try {
+                returnValue = command.ExecuteNonQuery();
+            }
+            finally {
+                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
+                    command.Connection.Close();
+                }
+            }
+            return returnValue;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        public virtual object GetSiteCreditsByAccountID(System.Guid AccountID) {
+            global::System.Data.SqlClient.SqlCommand command = this.CommandCollection[3];
             command.Parameters[0].Value = ((System.Guid)(AccountID));
             global::System.Data.ConnectionState previousConnectionState = command.Connection.State;
             if (((command.Connection.State & global::System.Data.ConnectionState.Open) 
@@ -4375,6 +4528,37 @@ namespace page.web2rev.net.DataSet.DsPageTableAdapters {
             else {
                 return ((object)(returnValue));
             }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Insert, false)]
+        public virtual int UpdateCreditAmountByCreditTypeName(int CreditAmount, System.Guid AccountID, string CreditTypeName) {
+            global::System.Data.SqlClient.SqlCommand command = this.CommandCollection[4];
+            command.Parameters[0].Value = ((int)(CreditAmount));
+            command.Parameters[1].Value = ((System.Guid)(AccountID));
+            if ((CreditTypeName == null)) {
+                command.Parameters[2].Value = global::System.DBNull.Value;
+            }
+            else {
+                command.Parameters[2].Value = ((string)(CreditTypeName));
+            }
+            global::System.Data.ConnectionState previousConnectionState = command.Connection.State;
+            if (((command.Connection.State & global::System.Data.ConnectionState.Open) 
+                        != global::System.Data.ConnectionState.Open)) {
+                command.Connection.Open();
+            }
+            int returnValue;
+            try {
+                returnValue = command.ExecuteNonQuery();
+            }
+            finally {
+                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
+                    command.Connection.Close();
+                }
+            }
+            return returnValue;
         }
     }
     
@@ -5394,6 +5578,7 @@ namespace page.web2rev.net.DataSet.DsPageTableAdapters {
             tableMapping.ColumnMappings.Add("FileSize", "FileSize");
             tableMapping.ColumnMappings.Add("TextFileContents", "TextFileContents");
             tableMapping.ColumnMappings.Add("FileURI", "FileURI");
+            tableMapping.ColumnMappings.Add("Deleted", "Deleted");
             this._adapter.TableMappings.Add(tableMapping);
             this._adapter.DeleteCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.DeleteCommand.Connection = this.Connection;
@@ -5404,7 +5589,7 @@ namespace page.web2rev.net.DataSet.DsPageTableAdapters {
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_VersionNumber", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "VersionNumber", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.InsertCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.InsertCommand.Connection = this.Connection;
-            this._adapter.InsertCommand.CommandText = @"INSERT INTO [File] ([ID], [CurrentVersion], [VersionNumber], [VersionTimestamp], [FileTypeID], [FileName], [FileURI], [FilePath], [FileSize], [TextFileContents]) VALUES (@ID, @CurrentVersion, @VersionNumber, @VersionTimestamp, @FileTypeID, @FileName, @FileURI, @FilePath, @FileSize, @TextFileContents)";
+            this._adapter.InsertCommand.CommandText = @"INSERT INTO [File] ([ID], [CurrentVersion], [VersionNumber], [VersionTimestamp], [FileTypeID], [FileName], [FileURI], [FilePath], [FileSize], [TextFileContents], [Deleted]) VALUES (@ID, @CurrentVersion, @VersionNumber, @VersionTimestamp, @FileTypeID, @FileName, @FileURI, @FilePath, @FileSize, @TextFileContents, @Deleted)";
             this._adapter.InsertCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ID", global::System.Data.SqlDbType.UniqueIdentifier, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ID", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@CurrentVersion", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "CurrentVersion", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
@@ -5416,9 +5601,10 @@ namespace page.web2rev.net.DataSet.DsPageTableAdapters {
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@FilePath", global::System.Data.SqlDbType.VarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "FilePath", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@FileSize", global::System.Data.SqlDbType.BigInt, 0, global::System.Data.ParameterDirection.Input, 0, 0, "FileSize", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@TextFileContents", global::System.Data.SqlDbType.Text, 0, global::System.Data.ParameterDirection.Input, 0, 0, "TextFileContents", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Deleted", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Deleted", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.UpdateCommand.Connection = this.Connection;
-            this._adapter.UpdateCommand.CommandText = @"UPDATE [File] SET [ID] = @ID, [CurrentVersion] = @CurrentVersion, [VersionNumber] = @VersionNumber, [VersionTimestamp] = @VersionTimestamp, [FileTypeID] = @FileTypeID, [FileName] = @FileName, [FileURI] = @FileURI, [FilePath] = @FilePath, [FileSize] = @FileSize, [TextFileContents] = @TextFileContents WHERE (([ID] = @Original_ID) AND ([VersionNumber] = @Original_VersionNumber))";
+            this._adapter.UpdateCommand.CommandText = @"UPDATE [File] SET [ID] = @ID, [CurrentVersion] = @CurrentVersion, [VersionNumber] = @VersionNumber, [VersionTimestamp] = @VersionTimestamp, [FileTypeID] = @FileTypeID, [FileName] = @FileName, [FileURI] = @FileURI, [FilePath] = @FilePath, [FileSize] = @FileSize, [TextFileContents] = @TextFileContents, [Deleted] = @Deleted WHERE (([ID] = @Original_ID) AND ([VersionNumber] = @Original_VersionNumber))";
             this._adapter.UpdateCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ID", global::System.Data.SqlDbType.UniqueIdentifier, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ID", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@CurrentVersion", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "CurrentVersion", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
@@ -5430,6 +5616,7 @@ namespace page.web2rev.net.DataSet.DsPageTableAdapters {
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@FilePath", global::System.Data.SqlDbType.VarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "FilePath", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@FileSize", global::System.Data.SqlDbType.BigInt, 0, global::System.Data.ParameterDirection.Input, 0, 0, "FileSize", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@TextFileContents", global::System.Data.SqlDbType.Text, 0, global::System.Data.ParameterDirection.Input, 0, 0, "TextFileContents", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Deleted", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Deleted", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ID", global::System.Data.SqlDbType.UniqueIdentifier, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ID", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_VersionNumber", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "VersionNumber", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
         }
@@ -5444,19 +5631,26 @@ namespace page.web2rev.net.DataSet.DsPageTableAdapters {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private void InitCommandCollection() {
-            this._commandCollection = new global::System.Data.SqlClient.SqlCommand[2];
+            this._commandCollection = new global::System.Data.SqlClient.SqlCommand[3];
             this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[0].Connection = this.Connection;
             this._commandCollection[0].CommandText = "SELECT ID, CurrentVersion, VersionNumber, VersionTimestamp, FileTypeID, FileName," +
-                " FileURI, FilePath, FileSize, TextFileContents FROM [File]";
+                " FileURI, FilePath, FileSize, TextFileContents, Deleted FROM [File]";
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
             this._commandCollection[1] = new global::System.Data.SqlClient.SqlCommand();
-            this._commandCollection[1].Connection = new global::System.Data.SqlClient.SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString);
-            this._commandCollection[1].CommandText = "SELECT CurrentVersion, FileName, FilePath, FileSize, FileTypeID, FileURI, ID, Tex" +
-                "tFileContents, VersionNumber, VersionTimestamp FROM [File] WHERE (UPPER(FilePath" +
-                ") = UPPER(@FilePath))";
+            this._commandCollection[1].Connection = this.Connection;
+            this._commandCollection[1].CommandText = "UPDATE [File] SET  CurrentVersion=0,Deleted = 1 WHERE ID=@ID and CurrentVersion=1" +
+                " and VersionNumber=@VersionNumber";
             this._commandCollection[1].CommandType = global::System.Data.CommandType.Text;
-            this._commandCollection[1].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@FilePath", global::System.Data.SqlDbType.VarChar, 1024, global::System.Data.ParameterDirection.Input, 0, 0, "", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._commandCollection[1].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ID", global::System.Data.SqlDbType.UniqueIdentifier, 16, global::System.Data.ParameterDirection.Input, 0, 0, "ID", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._commandCollection[1].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@VersionNumber", global::System.Data.SqlDbType.Int, 4, global::System.Data.ParameterDirection.Input, 0, 0, "VersionNumber", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._commandCollection[2] = new global::System.Data.SqlClient.SqlCommand();
+            this._commandCollection[2].Connection = new global::System.Data.SqlClient.SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString);
+            this._commandCollection[2].CommandText = "SELECT CurrentVersion, FileName, FilePath, FileSize, FileTypeID, FileURI, ID, Tex" +
+                "tFileContents, VersionNumber, VersionTimestamp, Deleted FROM [File] WHERE (UPPER" +
+                "(FilePath) = UPPER(@FilePath))";
+            this._commandCollection[2].CommandType = global::System.Data.CommandType.Text;
+            this._commandCollection[2].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@FilePath", global::System.Data.SqlDbType.VarChar, 1024, global::System.Data.ParameterDirection.Input, 0, 0, "", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -5488,7 +5682,7 @@ namespace page.web2rev.net.DataSet.DsPageTableAdapters {
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Fill, false)]
         public virtual int FillByFilePath(DsPage.FileDataTable dataTable, string FilePath) {
-            this.Adapter.SelectCommand = this.CommandCollection[1];
+            this.Adapter.SelectCommand = this.CommandCollection[2];
             if ((FilePath == null)) {
                 throw new global::System.ArgumentNullException("FilePath");
             }
@@ -5507,7 +5701,7 @@ namespace page.web2rev.net.DataSet.DsPageTableAdapters {
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, false)]
         public virtual DsPage.FileDataTable GetDataByFilePath(string FilePath) {
-            this.Adapter.SelectCommand = this.CommandCollection[1];
+            this.Adapter.SelectCommand = this.CommandCollection[2];
             if ((FilePath == null)) {
                 throw new global::System.ArgumentNullException("FilePath");
             }
@@ -5575,12 +5769,17 @@ namespace page.web2rev.net.DataSet.DsPageTableAdapters {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Insert, true)]
-        public virtual int Insert(System.Guid ID, bool CurrentVersion, int VersionNumber, System.DateTime VersionTimestamp, System.Guid FileTypeID, string FileName, string FileURI, string FilePath, long FileSize, string TextFileContents) {
+        public virtual int Insert(System.Guid ID, bool CurrentVersion, int VersionNumber, System.DateTime VersionTimestamp, global::System.Nullable<global::System.Guid> FileTypeID, string FileName, string FileURI, string FilePath, long FileSize, string TextFileContents, global::System.Nullable<bool> Deleted) {
             this.Adapter.InsertCommand.Parameters[0].Value = ((System.Guid)(ID));
             this.Adapter.InsertCommand.Parameters[1].Value = ((bool)(CurrentVersion));
             this.Adapter.InsertCommand.Parameters[2].Value = ((int)(VersionNumber));
             this.Adapter.InsertCommand.Parameters[3].Value = ((System.DateTime)(VersionTimestamp));
-            this.Adapter.InsertCommand.Parameters[4].Value = ((System.Guid)(FileTypeID));
+            if ((FileTypeID.HasValue == true)) {
+                this.Adapter.InsertCommand.Parameters[4].Value = ((System.Guid)(FileTypeID.Value));
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[4].Value = global::System.DBNull.Value;
+            }
             if ((FileName == null)) {
                 throw new global::System.ArgumentNullException("FileName");
             }
@@ -5606,6 +5805,12 @@ namespace page.web2rev.net.DataSet.DsPageTableAdapters {
             else {
                 this.Adapter.InsertCommand.Parameters[9].Value = ((string)(TextFileContents));
             }
+            if ((Deleted.HasValue == true)) {
+                this.Adapter.InsertCommand.Parameters[10].Value = ((bool)(Deleted.Value));
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[10].Value = global::System.DBNull.Value;
+            }
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.InsertCommand.Connection.State;
             if (((this.Adapter.InsertCommand.Connection.State & global::System.Data.ConnectionState.Open) 
                         != global::System.Data.ConnectionState.Open)) {
@@ -5626,12 +5831,17 @@ namespace page.web2rev.net.DataSet.DsPageTableAdapters {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(System.Guid ID, bool CurrentVersion, int VersionNumber, System.DateTime VersionTimestamp, System.Guid FileTypeID, string FileName, string FileURI, string FilePath, long FileSize, string TextFileContents, System.Guid Original_ID, int Original_VersionNumber) {
+        public virtual int Update(System.Guid ID, bool CurrentVersion, int VersionNumber, System.DateTime VersionTimestamp, global::System.Nullable<global::System.Guid> FileTypeID, string FileName, string FileURI, string FilePath, long FileSize, string TextFileContents, global::System.Nullable<bool> Deleted, System.Guid Original_ID, int Original_VersionNumber) {
             this.Adapter.UpdateCommand.Parameters[0].Value = ((System.Guid)(ID));
             this.Adapter.UpdateCommand.Parameters[1].Value = ((bool)(CurrentVersion));
             this.Adapter.UpdateCommand.Parameters[2].Value = ((int)(VersionNumber));
             this.Adapter.UpdateCommand.Parameters[3].Value = ((System.DateTime)(VersionTimestamp));
-            this.Adapter.UpdateCommand.Parameters[4].Value = ((System.Guid)(FileTypeID));
+            if ((FileTypeID.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[4].Value = ((System.Guid)(FileTypeID.Value));
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[4].Value = global::System.DBNull.Value;
+            }
             if ((FileName == null)) {
                 throw new global::System.ArgumentNullException("FileName");
             }
@@ -5657,8 +5867,14 @@ namespace page.web2rev.net.DataSet.DsPageTableAdapters {
             else {
                 this.Adapter.UpdateCommand.Parameters[9].Value = ((string)(TextFileContents));
             }
-            this.Adapter.UpdateCommand.Parameters[10].Value = ((System.Guid)(Original_ID));
-            this.Adapter.UpdateCommand.Parameters[11].Value = ((int)(Original_VersionNumber));
+            if ((Deleted.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[10].Value = ((bool)(Deleted.Value));
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[10].Value = global::System.DBNull.Value;
+            }
+            this.Adapter.UpdateCommand.Parameters[11].Value = ((System.Guid)(Original_ID));
+            this.Adapter.UpdateCommand.Parameters[12].Value = ((int)(Original_VersionNumber));
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.UpdateCommand.Connection.State;
             if (((this.Adapter.UpdateCommand.Connection.State & global::System.Data.ConnectionState.Open) 
                         != global::System.Data.ConnectionState.Open)) {
@@ -5679,8 +5895,33 @@ namespace page.web2rev.net.DataSet.DsPageTableAdapters {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(bool CurrentVersion, System.DateTime VersionTimestamp, System.Guid FileTypeID, string FileName, string FileURI, string FilePath, long FileSize, string TextFileContents, System.Guid Original_ID, int Original_VersionNumber) {
-            return this.Update(Original_ID, CurrentVersion, Original_VersionNumber, VersionTimestamp, FileTypeID, FileName, FileURI, FilePath, FileSize, TextFileContents, Original_ID, Original_VersionNumber);
+        public virtual int Update(bool CurrentVersion, System.DateTime VersionTimestamp, global::System.Nullable<global::System.Guid> FileTypeID, string FileName, string FileURI, string FilePath, long FileSize, string TextFileContents, global::System.Nullable<bool> Deleted, System.Guid Original_ID, int Original_VersionNumber) {
+            return this.Update(Original_ID, CurrentVersion, Original_VersionNumber, VersionTimestamp, FileTypeID, FileName, FileURI, FilePath, FileSize, TextFileContents, Deleted, Original_ID, Original_VersionNumber);
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, false)]
+        public virtual int DeleteFile(System.Guid ID, int VersionNumber) {
+            global::System.Data.SqlClient.SqlCommand command = this.CommandCollection[1];
+            command.Parameters[0].Value = ((System.Guid)(ID));
+            command.Parameters[1].Value = ((int)(VersionNumber));
+            global::System.Data.ConnectionState previousConnectionState = command.Connection.State;
+            if (((command.Connection.State & global::System.Data.ConnectionState.Open) 
+                        != global::System.Data.ConnectionState.Open)) {
+                command.Connection.Open();
+            }
+            int returnValue;
+            try {
+                returnValue = command.ExecuteNonQuery();
+            }
+            finally {
+                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
+                    command.Connection.Close();
+                }
+            }
+            return returnValue;
         }
     }
     

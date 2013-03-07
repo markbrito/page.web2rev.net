@@ -20,6 +20,7 @@
         </asp:ToolkitScriptManager>
         <asp:UpdatePanel ID="UpdatePanelMain" runat="server">
             <ContentTemplate>
+                <asp:Button ID="btnDecrementBuilderUsage" Style="display: none;" runat="server" Text="" OnClick="btnDecrementBuilderUsage_Click" />
                 <asp:Button ID="btnRefreshFiles" Style="display: none;" runat="server" Text="" OnClick="btnRefreshFiles_Click" />
                 <asp:TextBox ID="TextBoxUserName" Style="display: none;" runat="server" Text='<%# Membership.GetUser(this.Context.User.Identity.Name).UserName  %>'></asp:TextBox>
                 <asp:TextBox ID="TextBoxNewAccountID" Style="display: none;" runat="server" Text='<%# Guid.NewGuid().ToString() %>'></asp:TextBox>
@@ -39,14 +40,16 @@
                                     login:
                                     <% Response.Write(Membership.GetUser(this.Context.User.Identity.Name).UserName + "(" + Membership.GetUser(this.Context.User.Identity.Name).Email + ")"); %>
                                     account:<asp:DropDownList ID="ddlAccount" runat="server" AutoPostBack="True" DataSourceID="SqlDataSourceAccount"
-                                        DataTextField="Name" DataValueField="ID" OnDataBound="ddlAccount_DataBound">
+                                        DataTextField="Name" DataValueField="ID" 
+                                        OnDataBound="ddlAccount_DataBound" 
+                                        onselectedindexchanged="ddlAccount_SelectedIndexChanged">
                                     </asp:DropDownList>
                                     <span style="position: absolute; top: 0px; right: 0px;">
                                         <asp:GridView ID="GridViewCredits" BackColor="White" ForeColor="Black" runat="server"
                                             ShowHeader="True" DataSourceID="SqlDataSourceCredits">
                                         </asp:GridView>
                                         <asp:SqlDataSource ID="SqlDataSourceCredits" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionString %>"
-                                            SelectCommand="SELECT CreditType.Name as 'Credits', sum(AccountCredit.Credits) as '#' FROM AccountCredit INNER JOIN CreditType ON AccountCredit.CreditTypeID = CreditType.ID WHERE AccountID=@AccountID  GROUP BY CreditType.Name ">
+                                            SelectCommand="SELECT CreditType.Name as 'Credits', sum(AccountCredit.Credits) as '#' FROM AccountCredit INNER JOIN CreditType ON AccountCredit.CreditTypeID = CreditType.ID WHERE AccountID=@AccountID and AccountCredit.CurrentVersion=1  GROUP BY CreditType.Name ">
                                             <SelectParameters>
                                                 <asp:ControlParameter ControlID="ddlAccount" Name="AccountID" PropertyName="SelectedValue" />
                                             </SelectParameters>
@@ -55,7 +58,6 @@
                                     <asp:Button ID="btnCreateSite" runat="server" Text="Create Site" OnClick="btnCreateSite_Click"
                                         OnClientClick="document.getElementById('MainContent_TextBoxSiteCreatedSiteName').value=document.getElementById('MainContent_FormViewAccount_HiddenFieldNewSiteName').value=prompt('Enter New Site Name');var ddl=document.getElementById('MainContent_FormViewAccount_ddlAccount');document.getElementById('MainContent_TextBoxSiteCreatedAccountName').value=ddl.options[ddl.selectedIndex].text;" />
                                     <asp:SqlDataSource ID="SqlDataSourceCreateSite" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionString %>"
-                                        UpdateCommand="update AccountCredit set Credits=Credits-1 where AccountID=@AccountID and CreditTypeID='00000000-0000-0000-0000-000000000002'"
                                         InsertCommand="INSERT INTO Site(ID, CurrentVersion, VersionNumber, VersionTimestamp, AccountID, Name, RootFolderID) VALUES (@SiteID, 1, 1, GETDATE(), @AccountID, @Name, '00000000-0000-0000-0000-000000000000')"
                                         SelectCommand="SELECT [ID], [CurrentVersion], [VersionNumber], [VersionTimestamp], [AccountID], [Name], [RootFolderID] FROM [Site]">
                                         <InsertParameters>
@@ -158,7 +160,7 @@
                     <table width="900">
                         <tr>
                             <td align="right">
-                                <input type="button" value="View Files" onclick="document.getElementById('divFolderFiles').style.display='block';document.getElementById('divUpload').style.display='none';document.getElementById('MainContent_btnRefreshFiles').click();" />
+                                <input type="button" value="View Files" onclick="document.getElementById('divUpload').style.display='none';document.getElementById('MainContent_btnRefreshFiles').click();" />
                             </td>
                         </tr>
                     </table>
@@ -169,7 +171,7 @@
                                 <asp:UpdatePanel ID="UpdatePanelFolderUpload" runat="server">
                                     <ContentTemplate>
                                         <asp:AjaxFileUpload ID="AjaxFileUploadFolders" Width="100%" runat="server" OnUploadComplete="AjaxFileUploadFolders_UploadComplete"
-                                            AllowedFileTypes="jpg,png,gif,jpeg,txt,xml,html,htm,js,json,css,xsd,xsl" />
+                                            AllowedFileTypes="jpg,png,gif,jpeg,txt,xml,html,htm,js,json,css,xsd,xsl,flv,mp3" />
                                     </ContentTemplate>
                                     <Triggers>
                                         <asp:PostBackTrigger ControlID="AjaxFileUploadFolders" />
@@ -230,12 +232,31 @@
                                                                 <asp:HiddenField ID="HiddenTextFileContents" runat="server" Value='<%# Eval("TextFileContents") %>' />
                                                                 <div style="spacing: 5px 5px 5px 5px; height: 100%; width: 165px; text-align: center;
                                                                     vertical-align: middle; padding: 5px 5px 5p 5px;">
-                                                                    <asp:Image ID="imgFileURILabel" runat="server" Width="145px" Height="145px" ImageUrl='<%# Eval("FileURI") %>' />
-                                                                    <asp:Label Style="display: block; font-size: 11px; font-weight: bold; width: 145px;
+                                                                    <a style='<%# Eval("FileTypeName").ToString().Equals("Image")?"display: block; font-size: 11px;":"display: none;" %>' target="_blank" href='<%# Eval("FileURI") %>'>
+                                                                        <asp:Image ID="imgFileURILabel" runat="server" Visible='<%# Eval("FileTypeName").ToString().Equals("Image") %>' Width="145px" Height="145px" ImageUrl='<%# Eval("FileURI") %>' />
+                                                                    </a>
+                                                                    <asp:Label Style="display: block; font-size: 12px; margin: 5px 0px 0px 5px; font-weight: bold; width: 145px;
                                                                         text-align: center; word-wrap: break-word;" ID="FileNameLabel" runat="server"
                                                                         Text='<%# Eval("FileName") %>' />
+                                                                    <div style="display: table; margin-bottom: 5px; width: 100%; padding: 2px 2px 2px 2px;
+                                                                        border-spacing: 2px 2px 2px 2px; text-align: center;">
+                                                                        <a style="display: table-cell; font-size: 11px; padding: 2px 2px 2px 2px; border-spacing: 2px 2px 2px 2px;
+                                                                            text-align: center;" href='<%# Eval("FileURI") %>' download='<%# Eval("FileName").ToString().Substring(0,Eval("FileName").ToString().LastIndexOf(".")) %>'>
+                                                                            Download</a>
+                                                                        <asp:LinkButton PostBackUrl="~/Manage/Main.aspx" Style="display: table-cell; font-size: 11px; padding: 2px 2px 2px 2px;
+                                                                            border-spacing: 2px 2px 2px 2px; text-align: center;" ID="lnkDeleteFile" Text="Delete"
+                                                                            CommandArgument='<%# Eval("ID").ToString()+","+Eval("VersionNumber").ToString()+","+Eval("FileURI").ToString()+","+Eval("FileCouplingID").ToString() %>'
+                                                                            CommandName="DeleteFile" runat="server" OnCommand="lnkDeleteFile_Command">Delete</asp:LinkButton>
+                                                                        <asp:ConfirmButtonExtender ID="lnkDeleteFile_ConfirmButtonExtender" runat="server"
+                                                                            ConfirmText="Are you sure you want to delete this file?" Enabled="True" TargetControlID="lnkDeleteFile">
+                                                                        </asp:ConfirmButtonExtender>
+                                                                        <a target="_blank" style='<%# ("Page,Script,Style,Text".IndexOf(Eval("FileTypeName").ToString())>=0)?"display: table-cell;padding: 2px 2px 2px 2px;border-spacing: 2px 2px 2px 2px;text-align:center; font-size: 11px;": "display: none;" %>'
+                                                                            href='<%# Eval("FileURI") %>'>Edit</a>
+                                                                    </div>
                                                                     <asp:Label Style="display: block; font-size: 11px;" ID="VersionTimestampLabel" runat="server"
                                                                         Text='<%# Eval("VersionTimestamp") %>' />
+                                                                    <asp:Label Style="display: block; font-size: 11px;" ID="FileSizeLabel" runat="server"
+                                                                        Text='<%# "Size: "+Eval("FileSize").ToString()+" bytes" %>' />
                                                                 </div>
                                                             </td>
                                                         </ItemTemplate>
@@ -265,7 +286,8 @@
                                                         </LayoutTemplate>
                                                     </asp:ListView>
                                                     <asp:SqlDataSource ID="SqlDataSourceListFile" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionString %>"
-                                                        SelectCommand="SELECT [File].ID, [File].VersionTimestamp, [File].FileName, [File].FileURI, [File].FilePath, [File].FileSize, [File].TextFileContents FROM [File] INNER JOIN FileCoupling ON [File].ID = FileCoupling.FileID WHERE ([File].CurrentVersion = 1) AND ([File].FileTypeID = @FileTypeID) AND (FileCoupling.FolderID = @FolderID)">
+                                                        
+                                                        SelectCommand="SELECT [File].ID, [File].VersionNumber,FileCoupling.ID as FileCouplingID, [File].VersionTimestamp, [File].FileName, replace([File].FileURI,'~','') as FileURI, [File].FilePath FilePath, [File].FileSize, [File].TextFileContents, FileType.Name as FileTypeName FROM [File] INNER JOIN FileCoupling ON [File].ID = FileCoupling.FileID INNER JOIN FileType ON [File].FileTypeID = FileType.ID WHERE ([File].CurrentVersion = 1) AND ([File].FileTypeID = @FileTypeID) AND (FileCoupling.FolderID = @FolderID) order by [File].FileName">
                                                         <SelectParameters>
                                                             <asp:ControlParameter DbType="Guid" ControlID="LabelFileTypeID" Name="FileTypeID"
                                                                 PropertyName="Value" />
@@ -340,8 +362,8 @@
 SELECT NEWID() AS Expr1, 1 AS Expr5, 1 AS Expr2, GETDATE() AS Expr3,@AccountID AS Expr4, Credit.CreditType, Credit.Credits
 FROM  PackageCredit INNER JOIN
                Credit ON PackageCredit.CreditID = Credit.ID
-WHERE (PackageCredit.PackageID = '00000000-0000-0000-0000-000000000001')" SelectCommand="SELECT * FROM AccountCredit"
-                    UpdateCommand="update AccountCredit set Credits=Credits-1 where AccountID=@AccountID and CreditTypeID='00000000-0000-0000-0000-000000000001'">
+WHERE (PackageCredit.PackageID = '00000000-0000-0000-0000-000000000001')" SelectCommand="SELECT * FROM AccountCredit where CurrentVersion=1"
+                    UpdateCommand="update AccountCredit set Credits=Credits-1 where AccountID=@AccountID and CreditTypeID='00000000-0000-0000-0000-000000000001 and CurrentVersion=1'">
                     <InsertParameters>
                         <asp:ControlParameter ControlID="TextBoxNewAccountID" DbType="Guid" Name="AccountID"
                             PropertyName="Text" />
@@ -385,5 +407,5 @@ WHERE (PackageCredit.PackageID = '00000000-0000-0000-0000-000000000001')" Select
                 </asp:DropShadowExtender>
             </ProgressTemplate>
         </asp:UpdateProgress>
-    </div>
+    </div> 
 </asp:Content>

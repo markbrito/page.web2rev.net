@@ -31,6 +31,15 @@ namespace page.web2rev.net.Manage {
         protected global::System.Web.UI.UpdatePanel UpdatePanelMain;
         
         /// <summary>
+        /// btnDecrementBuilderUsage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnDecrementBuilderUsage;
+        
+        /// <summary>
         /// btnRefreshFiles control.
         /// </summary>
         /// <remarks>

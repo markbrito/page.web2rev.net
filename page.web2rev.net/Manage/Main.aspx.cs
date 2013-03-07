@@ -50,8 +50,10 @@ namespace page.web2rev.net.Manage
                 .DataBind();
             ((SqlDataSource)FormViewAccount.FindControl("SqlDataSourceCreateSite"))
                 .Insert();
-            ((SqlDataSource)FormViewAccount.FindControl("SqlDataSourceCreateSite"))
-                .Update();
+            AccountCreditTableAdapter adptrCredit = new AccountCreditTableAdapter();
+            DsPage.AccountCreditDataTable tblCredit = adptrCredit.GetDataByCreditTypeName(new Guid(Session["SELECTEDACCOUNTID"].ToString()), "Site");
+            adptrCredit.UpdateCreditAmountByCreditTypeName(-1, new Guid(Session["SELECTEDACCOUNTID"].ToString()), "Site");
+            adptrCredit.ArchiveCurrentCreditRecord(new Guid(Session["SELECTEDACCOUNTID"].ToString()), "Site", tblCredit[0].VersionNumber);
             ((SqlDataSource)FormViewAccount.FindControl("SqlDataSourceAccountSites"))
                 .DataBind();
             ((GridView)FormViewAccount.FindControl("gvSites"))
@@ -63,6 +65,26 @@ namespace page.web2rev.net.Manage
             TextBoxNewSiteID.Text = Guid.NewGuid().ToString();
         }
 
+        protected void btnDecrementBuilderUsage_Click(object sender, EventArgs e)
+        {
+            AccountCreditTableAdapter adptrCredit = new AccountCreditTableAdapter();
+            DsPage.AccountCreditDataTable tblCredit = adptrCredit.GetDataByCreditTypeName(
+                new Guid(Session["SELECTEDACCOUNTID"].ToString()), "Page Builder");
+            adptrCredit.UpdateCreditAmountByCreditTypeName(-1, new Guid(Session["SELECTEDACCOUNTID"].ToString()), "Page Builder");
+            adptrCredit.ArchiveCurrentCreditRecord(new Guid(Session["SELECTEDACCOUNTID"].ToString()), "Page Builder",tblCredit[0].VersionNumber);
+        }
+
+        protected void ddlAccount_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            AccountCreditTableAdapter acctCreditAdptr = new AccountCreditTableAdapter();
+            DropDownList ddl = ((DropDownList)sender);
+            Guid acctID = new Guid(ddl.SelectedValue);
+            Session["SELECTEDACCOUNTID"] = ddl.SelectedValue;
+            Session["SELECTEDACCOUNTNAME"] = Regex.Replace(ddl.SelectedItem.Text, "[^A-Za-z0-9]", "");
+            int cred = (int)acctCreditAdptr.GetSiteCreditsByAccountID(acctID);
+            ((Button)FormViewAccount.FindControl("btnCreateSite")).Enabled = (cred > 0);
+        }
+
         protected void ddlAccount_DataBound(object sender, EventArgs e)
         {
             try
@@ -70,6 +92,7 @@ namespace page.web2rev.net.Manage
                 AccountCreditTableAdapter acctCreditAdptr = new AccountCreditTableAdapter();
                 DropDownList ddl = ((DropDownList)sender);
                 Guid acctID = new Guid(ddl.SelectedValue);
+                Session["SELECTEDACCOUNTID"] = ddl.SelectedValue;
                 Session["SELECTEDACCOUNTNAME"] = Regex.Replace(ddl.SelectedItem.Text, "[^A-Za-z0-9]", "");
                 int cred = (int)acctCreditAdptr.GetSiteCreditsByAccountID(acctID);
                 ((Button)FormViewAccount.FindControl("btnCreateSite")).Enabled = (cred > 0);
@@ -112,7 +135,7 @@ namespace page.web2rev.net.Manage
                         node2.Collapse();
                         node.ChildNodes.Add(node2);
                     }
-                    node.Collapse();
+                    node.Expand();
                     tv.Nodes.Add(node);
                 }
                
@@ -208,8 +231,20 @@ namespace page.web2rev.net.Manage
             bool isTextFile = fileTypeName.Equals("Page") || fileTypeName.Equals("Style") ||
                 fileTypeName.Equals("Text") || fileTypeName.Equals("Script");
             adptrFile.Insert(fileID, true, 1, DateTime.Now, fileTypeID, e.FileName,
-                fileURI, filePath, (long)e.FileSize, (e.FileSize < 128 * 1024) && isTextFile ? e.GetContents().ToString() : string.Empty);
+                fileURI, filePath, (long)e.FileSize, 
+                (e.FileSize < 128 * 1024) && isTextFile ? e.GetContents().ToString() : string.Empty,
+                false);
             adptrFileCoupling.Insert(Guid.NewGuid(), new Guid(Session["SELECTEDFOLDERID"].ToString()), fileID);
+            string creditType=fileTypeName.Equals("Page")?"Page":(fileTypeName.Equals("Image")?"Image":"File");
+            AccountCreditTableAdapter adptrCredit = new AccountCreditTableAdapter();
+            DsPage.AccountCreditDataTable tblCredit = adptrCredit.GetDataByCreditTypeName(
+                new Guid(Session["SELECTEDACCOUNTID"].ToString()), creditType);
+            adptrCredit.UpdateCreditAmountByCreditTypeName(-1, new Guid(Session["SELECTEDACCOUNTID"].ToString()), creditType);
+            adptrCredit.ArchiveCurrentCreditRecord(new Guid(Session["SELECTEDACCOUNTID"].ToString()), creditType, tblCredit[0].VersionNumber);
+            tblCredit = adptrCredit.GetDataByCreditTypeName(
+                new Guid(Session["SELECTEDACCOUNTID"].ToString()), "Disk Space"); 
+            adptrCredit.UpdateCreditAmountByCreditTypeName(-1 * e.FileSize, new Guid(Session["SELECTEDACCOUNTID"].ToString()), "Disk Space");
+            adptrCredit.ArchiveCurrentCreditRecord(new Guid(Session["SELECTEDACCOUNTID"].ToString()),"Disk Space", tblCredit[0].VersionNumber);
             PanelFolderFiles.Visible = true;
             TextBoxSelectedServerPathFolder.Text = Session["SELECTEDSERVERPATHFOLDER"].ToString();
             TextBoxSelectedFolderID.Text = Session["SELECTEDFOLDERID"].ToString();
@@ -223,5 +258,22 @@ namespace page.web2rev.net.Manage
             gvFileType.DataBind();
         }
 
+        protected void lnkDeleteFile_Command(object sender, CommandEventArgs e)
+        {
+            if (e.CommandName.Equals("DeleteFile"))
+            {
+                string[] args = e.CommandArgument.ToString().Split(new char[] { ',' });
+                File.Delete(Server.MapPath(args[2]));
+                FileCouplingTableAdapter adptCoupling = new FileCouplingTableAdapter();
+                FileTableAdapter adptFile = new FileTableAdapter();
+                adptCoupling.Delete(new Guid(args[3]));
+                adptFile.DeleteFile(new Guid(args[0]), int.Parse(args[1]));
+                PanelFolderFiles.Visible = true;
+                TextBoxSelectedServerPathFolder.Text = Session["SELECTEDSERVERPATHFOLDER"].ToString();
+                TextBoxSelectedFolderID.Text = Session["SELECTEDFOLDERID"].ToString();
+                PanelFolderFiles.Visible = true;
+                gvFileType.DataBind();
+            }
+        }
     }
 }
